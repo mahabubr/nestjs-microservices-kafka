@@ -1,25 +1,25 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.connectMicroservice<MicroserviceOptions>({
+  app.connectMicroservice({
     transport: Transport.KAFKA,
     options: {
       client: {
         brokers: ['localhost:9092'],
-        logLevel: 5, // Enable debug-level logging
+        clientId: 'producer-client',
       },
       consumer: {
-        groupId: 'payment-service-group',
+        groupId: 'payment-consumer',
       },
     },
   });
 
   await app.startAllMicroservices();
-
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(3000);
 }
+
 bootstrap();
